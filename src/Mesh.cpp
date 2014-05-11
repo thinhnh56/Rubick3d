@@ -6,20 +6,21 @@
  */
 #include "Mesh.h"
 
-bool Mesh::getMesh(const char * fileName){
+
+bool Mesh::getMesh(const char * fileName) {
 	FILE * file = fopen(fileName, "r");
-	if (file == NULL){
+	if (file == NULL) {
 		cout << "error reading file " << fileName << endl;
 		return false;
 	}
 	char header[256];
-	while (1){
+	while (1) {
 		int res = fscanf(file, "%s", header);
 		//cout << header << endl;
-		if (res == EOF){
+		if (res == EOF) {
 			break;
 		}
-		if ( strcmp( header, "v") == 0){
+		if (strcmp(header, "v") == 0) {
 			Vec3 tempVer;
 			tempVer.x = 0;
 			tempVer.y = 0;
@@ -28,12 +29,12 @@ bool Mesh::getMesh(const char * fileName){
 			//cout << tempVer.x << tempVer.y << tempVer.z << endl;
 			this->vertex.push_back(tempVer);
 		}
-		if ( strcmp(header, "vn") == 0){
+		if (strcmp(header, "vn") == 0) {
 			Vec3 tempNorm;
 			fscanf(file, " %f %f %f ", &tempNorm.x, &tempNorm.y, &tempNorm.z);
 			this->normalVec.push_back(tempNorm);
 		}
-		if ( strcmp(header, "f")  == 0){
+		if (strcmp(header, "f") == 0) {
 			Face tempFace;
 			int tempVer, tempNorm;
 
@@ -54,13 +55,13 @@ bool Mesh::getMesh(const char * fileName){
 	}
 	return true;
 }
-void Mesh::drawFace(){
-	for (int i=0; i<this->face.size(); ++i){
+void Mesh::drawFace() {
+	for (int i = 0; i < (int) this->face.size(); ++i) {
 		glBegin(GL_POLYGON);
-		for (int j=0; j<this->face[i].vertexIndex.size(); ++j ){
+		for (int j = 0; j <(int)  this->face[i].vertexIndex.size(); ++j) {
 			Vec3 temp_normal = this->normalVec[this->face[i].normalIndex[j]];
 			glNormal3f(temp_normal.x, temp_normal.y, temp_normal.z);
-			Vec3 temp_ver = this->vertex[ this->face[i].vertexIndex[j] ];
+			Vec3 temp_ver = this->vertex[this->face[i].vertexIndex[j]];
 			glVertex3f(temp_ver.x, temp_ver.y, temp_ver.z);
 		}
 		glEnd();
@@ -68,27 +69,23 @@ void Mesh::drawFace(){
 	glFlush();
 }
 
-void Mesh::toString(){
+void Mesh::toString() {
 	cout << "Mesh vertex" << endl;
-	for (int i=0; i<this->vertex.size(); ++i){
-		cout << this->vertex[i].x << " " << this->vertex[i].y << " " << this->vertex[i].z << endl;
+	for (int i = 0; i <(int)  this->vertex.size(); ++i) {
+		cout << this->vertex[i].x << " " << this->vertex[i].y << " "
+				<< this->vertex[i].z << endl;
 	}
-	cout << "Mesh normal"<< endl;
-	for (int i=0; i<this->normalVec.size(); i++){
-		cout << this->normalVec[i].x << " " << this->normalVec[i].y << " " << this->normalVec[i].z << endl;
+	cout << "Mesh normal" << endl;
+	for (int i = 0; i <(int)  this->normalVec.size(); i++) {
+		cout << this->normalVec[i].x << " " << this->normalVec[i].y << " "
+				<< this->normalVec[i].z << endl;
 	}
 	cout << "Mesh Face" << endl;
-	for (int i=0; i<this->face.size(); ++i){
-		for (int j=0; j<this->face[i].normalIndex.size(); j++){
-			cout << this->face[i].normalIndex[j] << "/" << this->face[i].vertexIndex[j] << " ";
+	for (int i = 0; i < (int) this->face.size(); ++i) {
+		for (int j = 0; j < (int) this->face[i].normalIndex.size(); j++) {
+			cout << this->face[i].normalIndex[j] << "/"
+					<< this->face[i].vertexIndex[j] << " ";
 		}
 		cout << endl;
 	}
 }
-
-
-
-
-
-
-
