@@ -30,6 +30,7 @@ struct Vec3{
 
 class Mesh{
 private:
+	vector<Mesh> componentMesh;
 	string meshFile;
 	vector<Vec3> vertex;
 	vector<Vec3> normalVec;
