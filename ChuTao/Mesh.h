@@ -27,7 +27,9 @@ struct Face{
 struct Vec3{
 	float x, y, z;
 };
-
+struct Vec3i{
+	int x, y, z;
+};
 
 class Mesh{
 private:
@@ -36,7 +38,7 @@ private:
 	vector<Vec3> normalVec;
 	vector<Face> face;
 	
-	Vec3i rotatedAngle;
+	Vec3i rotatedAngle = {0,0,0};
 public:
 	bool getMesh(const char * fileName);	
 	void drawFace();
