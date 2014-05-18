@@ -38,9 +38,9 @@ class Vector3{
   Vector3(float xx, float yy, float zz){
 	  x = xx; y = yy; z = zz;
   }
-  Vector3(Vector3& v){
+  /*Vector3(Vector3& v){
 	  x = v.x; y = v.y; z = v.z;
-  }
+  }*/
   Vector3(){
 	  x = y = z = 0;
   } //default constructor
