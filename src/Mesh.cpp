@@ -26,7 +26,7 @@ bool Mesh::getMesh(const char * fileName){
 			break;
 		}
 		if ( strcmp( header, "v") == 0){
-			Vec3 tempVer;
+			Vector3 tempVer;
 			tempVer.x = 0;
 			tempVer.y = 0;
 			tempVer.z = 0;
@@ -36,7 +36,7 @@ bool Mesh::getMesh(const char * fileName){
 
 		}
 		if ( strcmp(header, "vn") == 0){
-			Vec3 tempNorm;
+			Vector3 tempNorm;
 			fscanf(file, " %f %f %f ", &tempNorm.x, &tempNorm.y, &tempNorm.z);
 			tempMesh->normalVec.push_back(tempNorm);
 
@@ -46,16 +46,30 @@ bool Mesh::getMesh(const char * fileName){
 			int tempVer, tempNorm;
 
 			fscanf(file, "%d//%d ", &tempVer, &tempNorm);
-			tempFace.normalIndex.push_back(tempNorm - 1);
-			tempFace.vertexIndex.push_back(tempVer - 1);
+			if (componentMesh.size() < 2){
+				tempFace.normalIndex.push_back(tempNorm - 1);
+				tempFace.vertexIndex.push_back(tempVer - 1);
+			}else{
+				tempFace.normalIndex.push_back(tempNorm - 104*(componentMesh.size()-1) -1);
+				tempFace.vertexIndex.push_back(tempVer - 104*(componentMesh.size()-1) -1);
+			}
+			fscanf(file, "%d//%d", &tempVer, &tempNorm);
+			if (componentMesh.size() < 2){
+				tempFace.normalIndex.push_back(tempNorm - 1);
+				tempFace.vertexIndex.push_back(tempVer - 1);
+			}else{
+				tempFace.normalIndex.push_back(tempNorm - 104*(componentMesh.size()-1) -1);
+				tempFace.vertexIndex.push_back(tempVer - 104*(componentMesh.size()-1) -1);
+			}
 
 			fscanf(file, "%d//%d", &tempVer, &tempNorm);
-			tempFace.normalIndex.push_back(tempNorm - 1);
-			tempFace.vertexIndex.push_back(tempVer - 1);
-
-			fscanf(file, "%d//%d", &tempVer, &tempNorm);
-			tempFace.normalIndex.push_back(tempNorm - 1);
-			tempFace.vertexIndex.push_back(tempVer - 1);
+			if (componentMesh.size() < 2){
+				tempFace.normalIndex.push_back(tempNorm - 1);
+				tempFace.vertexIndex.push_back(tempVer - 1);
+			}else{
+				tempFace.normalIndex.push_back(tempNorm - 104*(componentMesh.size()-1) -1);
+				tempFace.vertexIndex.push_back(tempVer - 104*(componentMesh.size()-1) -1);
+			}
 			tempMesh->face.push_back(tempFace);
 			if (tempMesh->normalVec.size() == 0){
 				tempMesh->normalVec = componentMesh[componentMesh.size() - 2].normalVec;
@@ -76,21 +90,26 @@ bool Mesh::getMesh(const char * fileName){
 }
 void Mesh::drawFace(){
 
-	for (int m =0 ; m<componentMesh.size(); m++){
-		//Mesh tempMesh;
-		//tempMesh = componentMesh[m];
-		for (int i=0; i<componentMesh[m].face.size(); ++i){
-			glBegin(GL_POLYGON);
-			for (int j=0; j<componentMesh[m].face[i].vertexIndex.size(); ++j ){
-				Vec3 temp_normal = componentMesh[m].normalVec[componentMesh[m].face[i].normalIndex[j]];
-				glNormal3f(temp_normal.x, temp_normal.y, temp_normal.z);
-				Vec3 temp_ver = componentMesh[m].vertex[ componentMesh[m].face[i].vertexIndex[j] ];
-				glVertex3f(temp_ver.x, temp_ver.y, temp_ver.z);
+	float faceVertex[9];
+	vector<float> tempFaceVertex;
+	for (int i=0; i<componentMesh.size() - 1; i++){
+		for (int j=0; j<componentMesh[i].face.size(); j++){
+			tempFaceVertex.clear();
+			for (int k = 0; k<componentMesh[i].face[j].vertexIndex.size(); k++){
+				Vector3 tempVer = componentMesh[i].vertex[componentMesh[i].face[j].vertexIndex[k]];
+				tempFaceVertex.push_back(tempVer.x);
+				tempFaceVertex.push_back(tempVer.y);
+				tempFaceVertex.push_back(tempVer.z);
 			}
-			glEnd();
+			copy(tempFaceVertex.begin(), tempFaceVertex.end(), faceVertex );
+
+			glEnableClientState(GL_VERTEX_ARRAY);
+			glVertexPointer(3, GL_FLOAT, 0, faceVertex);
+			glDrawArrays(GL_TRIANGLES, 0, 9);
+			glDisableClientState(GL_VERTEX_ARRAY);
 		}
-		glFlush();
 	}
+	glFlush();
 }
 
 void Mesh::toString(){
