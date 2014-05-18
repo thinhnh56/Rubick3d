@@ -38,12 +38,12 @@ private:
 	vector<Vec3> normalVec;
 	vector<Face> face;
 	
-	Vec3i rotatedAngle = {0,0,0};
+	Vec3i rotatedAngle;
 public:
 	bool getMesh(const char * fileName);	
 	void drawFace();
 	
-	void rotateMesh(float angle, int xyz);
+	void rotateMesh(int xyz);
 	void drawMesh();
 	
 	void toString();

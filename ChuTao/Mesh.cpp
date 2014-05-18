@@ -113,7 +113,7 @@ void Mesh:: drawMesh()
          this->rotatedAngle.y += addAngle;
      if( this->rotatedAngle.z %90 > 0)
          this->rotatedAngle.z += addAngle;                        
-     this.drawFace();
+     this->drawFace();
 	 glPopMatrix();
 	 
 }
