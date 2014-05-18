@@ -81,13 +81,12 @@ void makeRayPicking(int x, int y)
          
 }
 
-/*
 double collisionRayAndMesh (Mesh mesh) // return -1 if not, k > 0 if true with k is smallest distance from start to collisionPoints
 {
      // mesh have center and egde length
      Vector3 center; // = mesh.center;
      double egdeLength; // = mesh.egdeLength;
-     Vector3 normalVectorPlane[] = {{0,0,1} , {0,0,-1} , {0,1,0} , {0,-1,0} , {1,0,0} , {-1,0,0}};
+     Vector3 normalVectorPlane[] = {Vector3(0,0,1) , Vector3(0,0,-1) , Vector3(0,1,0) , Vector3(0,-1,0) , Vector3(1,0,0) , Vector3(-1,0,0)};
      Vector3 centerPlane;
      
      Vector3 rayU = m_end - m_start;
@@ -96,11 +95,11 @@ double collisionRayAndMesh (Mesh mesh) // return -1 if not, k > 0 if true with k
      bool collison = false;
      for (int i = 0;i < 6 ; i ++)
      {
-         centerPlane = center + normalVectorPlane[i] .product( egdeLength/2);
+         centerPlane = center + normalVectorPlane[i] *( egdeLength/2);
          
          double k;
-         k = ((centerPlane - m_start) .dot( normalVectorPlane[i])) / (rayU .dot( normalVectorPlane[i]));
-         pointCollision = m_start + k* rayU;
+         k = ((centerPlane - m_start) *( normalVectorPlane[i])) / (rayU *( normalVectorPlane[i]));
+         pointCollision = m_start + rayU * k;
          
          Vector3 vetorCollision = pointCollision - centerPlane;
          if( fabs(vetorCollision. x) < 1 && fabs(vetorCollision. y) < 1 && fabs(vetorCollision. z) < 1)
@@ -139,7 +138,6 @@ int idOfSelectedMesh(vector<Mesh> mesh)
         
 }
 
-*/
 
 void mouse(int button, int state, int x, int y) 
 {

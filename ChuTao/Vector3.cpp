@@ -42,20 +42,36 @@ void Vector3::normalize() {
 
 }
 
-// return this dotted with b
-float Vector3::dot(Vector3 b) {
-	return x * b.x + y * b.y + z * b.z;
-}
 
 //return this cross b
 Vector3 Vector3::cross(const Vector3 &b) {
 	return Vector3(y * b.z - z * b.y, z * b.x - x * b.z, x * b.y - y * b.x);
 }
 
-Vector3 Vector3::product(double k)
+Vector3 Vector3::operator+(Vector3 b)
 {
-        return Vector3(x * k, y * k, z * k);    
+      return Vector3( x + b.x , y + b.y , z + b.z);
+}
+Vector3 Vector3::operator-(Vector3 b)
+{
+      return Vector3( x - b.x , y - b.y , z - b.z);
+} 
+Vector3 Vector3::operator*(double k)
+{
+      return Vector3( x * k , y * k , z * k);
 }
 
+Vector3 Vector3::operator/(double k)
+{
+      return Vector3( x / k , y / k , z / k);
+}
+float Vector3::operator*(Vector3 b)
+{
+      return ( x * b.x + y * b.y + z * b.z);
+}
+float Vector3::Distance(Vector3 b)
+{
+      return sqrt((x-b.x)*(x-b.x) + (y-b.y)*(y-b.y) + (z - b.z)*(z - b.z));
+}
 Vector3::~Vector3() {
 }

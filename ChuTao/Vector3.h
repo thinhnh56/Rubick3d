@@ -1,5 +1,6 @@
 #pragma once
 #include "Point3.h"
+#include <math.h>
 class Vector3
 {
 public:
@@ -21,8 +22,13 @@ public:
 	//return this cross b
 	Vector3 cross(const Vector3 &b);
 	// return this dotted with b
-	float dot(Vector3 b); 
-    Vector3 product(double k);
+	
+	float Distance(Vector3 b);
+	Vector3 operator+(Vector3 b); 
+	Vector3 operator-(Vector3 b); 
+    Vector3 operator*(double k);
+    Vector3 operator/(double k);
+    float operator*(Vector3 b);
     
 	~Vector3();
 };
