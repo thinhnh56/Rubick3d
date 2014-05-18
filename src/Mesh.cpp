@@ -91,20 +91,29 @@ bool Mesh::getMesh(const char * fileName){
 void Mesh::drawFace(){
 
 	float faceVertex[9];
+	float normal[9];
 	vector<float> tempFaceVertex;
+	vector<float> tempNormalVector;
 	for (int i=0; i<componentMesh.size() - 1; i++){
 		for (int j=0; j<componentMesh[i].face.size(); j++){
 			tempFaceVertex.clear();
+			tempNormalVector.clear();
 			for (int k = 0; k<componentMesh[i].face[j].vertexIndex.size(); k++){
 				Vector3 tempVer = componentMesh[i].vertex[componentMesh[i].face[j].vertexIndex[k]];
 				tempFaceVertex.push_back(tempVer.x);
 				tempFaceVertex.push_back(tempVer.y);
 				tempFaceVertex.push_back(tempVer.z);
+				Vector3 tempNorm = componentMesh[i].normalVec[componentMesh[i].face[j].normalIndex[k]];
+				tempNormalVector.push_back(tempNorm.x);
+				tempNormalVector.push_back(tempNorm.y);
+				tempNormalVector.push_back(tempNorm.z);
 			}
 			copy(tempFaceVertex.begin(), tempFaceVertex.end(), faceVertex );
-
+			copy(tempNormalVector.begin(), tempNormalVector.end(), normal);
 			glEnableClientState(GL_VERTEX_ARRAY);
+			glEnableClientState(GL_NORMAL_ARRAY);
 			glVertexPointer(3, GL_FLOAT, 0, faceVertex);
+			glNormalPointer(GL_FLOAT, 0,normal);
 			glDrawArrays(GL_TRIANGLES, 0, 9);
 			glDisableClientState(GL_VERTEX_ARRAY);
 		}
