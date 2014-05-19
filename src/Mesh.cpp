@@ -5,8 +5,41 @@
  *      Author: lament
  */
 #include "Mesh.h"
+void Mesh::loadMtl(const char* mtlFile){
+	FILE* file = fopen(mtlFile, "r");
+	if (file == NULL){
+		cout << "error reading mtl file" ;
+		return;
+	}
+	char header[256];
+	int mtlIndex;
+	while(1){
+		int res = fscanf(file, "%s", header);
+		if (res == EOF){
+			break;
+		}
+		if (strcmp(header, "newmtl") == 0){
+			fscanf(file, " %d", &mtlIndex);
+			//cout << mtlIndex<< endl;
+			float x, y, z;
+			res = fscanf(file, "%s", header);
+			if (strcmp(header, "Ka") == 0){
+				fscanf(file, "  %f %f %f", &materials[mtlIndex].Ka[0], &materials[mtlIndex].Ka[1], &materials[mtlIndex].Ka[2]);
 
-bool Mesh::getMesh(const char * fileName){
+			}
+			res = fscanf(file, "%s", header);
+			if (strcmp(header, "Kd") == 0){
+				fscanf(file, "  %f %f %f", &materials[mtlIndex].Kd[0], &materials[mtlIndex].Kd[1], &materials[mtlIndex].Kd[2]);
+			}
+			res = fscanf(file, "%s", header);
+			if (strcmp(header, "Ks") == 0){
+				fscanf(file, "  %f %f %f", &materials[mtlIndex].Ks[0], &materials[mtlIndex].Ks[1], &materials[mtlIndex].Ks[2]);
+			}
+			materials[mtlIndex].Ns = 0;
+		}
+	}
+}
+bool Mesh::getMesh(const char * fileName, const char* mtlFile){
 	FILE * file = fopen(fileName, "r");
 	if (file == NULL){
 		cout << "error reading file " << fileName << endl;
@@ -15,6 +48,8 @@ bool Mesh::getMesh(const char * fileName){
 	char header[256];
 	Mesh* tempMesh;
 	bool flag = false;
+	int currentMtlIndex = 0;
+	loadMtl(mtlFile);
 	while (1){
 		int res = fscanf(file, "%s", header);
 
@@ -41,9 +76,15 @@ bool Mesh::getMesh(const char * fileName){
 			tempMesh->normalVec.push_back(tempNorm);
 
 		}
+		if (strcmp(header, "usemtl") == 0){
+			fscanf(file, " %d", &currentMtlIndex);
+			//cout << currentMtlIndex << endl;
+		}
 		if ( strcmp(header, "f")  == 0){
 			Face tempFace;
 			int tempVer, tempNorm;
+
+			tempFace.mtlIndex = currentMtlIndex;
 
 			fscanf(file, "%d//%d ", &tempVer, &tempNorm);
 			if (componentMesh.size() < 2){
@@ -96,6 +137,11 @@ void Mesh::drawFace(){
 	vector<float> tempNormalVector;
 	for (int i=0; i<componentMesh.size() - 1; i++){
 		for (int j=0; j<componentMesh[i].face.size(); j++){
+			glMaterialfv(GL_FRONT, GL_SPECULAR, materials[componentMesh[i].face[j].mtlIndex].Ks);
+			glMaterialfv(GL_FRONT, GL_DIFFUSE, materials[componentMesh[i].face[j].mtlIndex].Kd);
+			glMaterialfv(GL_FRONT, GL_AMBIENT, materials[componentMesh[i].face[j].mtlIndex].Ka);
+			glMaterialf(GL_FRONT, GL_SHININESS, materials[componentMesh[i].face[j].mtlIndex].Ns);
+
 			tempFaceVertex.clear();
 			tempNormalVector.clear();
 			for (int k = 0; k<componentMesh[i].face[j].vertexIndex.size(); k++){
@@ -134,6 +180,7 @@ void Mesh::toString(){
 		}
 		cout << "Mesh Face" << endl;
 		for (int i=0; i<componentMesh[m].face.size(); ++i){
+			cout << "materials " << componentMesh[m].face[i].mtlIndex << "  ";
 			for (int j=0; j<componentMesh[m].face[i].normalIndex.size(); j++){
 				cout << componentMesh[m].face[i].normalIndex[j] << "/" << componentMesh[m].face[i].vertexIndex[j] << " ";
 			}
