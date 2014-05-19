@@ -24,16 +24,13 @@ struct Face{
 	vector<int> vertexIndex;
 	vector<int> normalIndex;
 };
-struct Vec3{
-	float x, y, z;
-};
 
 class Mesh{
 private:
 	vector<Mesh> componentMesh;
 	string meshFile;
-	vector<Vec3> vertex;
-	vector<Vec3> normalVec;
+	vector<Vector3> vertex;
+	vector<Vector3> normalVec;
 	vector<Face> face;
 public:
 	bool getMesh(const char * fileName);
