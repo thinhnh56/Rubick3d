@@ -45,7 +45,10 @@ float dx ,dy ,dz ;
 Vector3 m_start, m_end;
 GLdouble wx, wy, wz;  /*  returned world x, y, z coords  */
 GLdouble wx1, wy1, wz1;  /*  returned world x, y, z coords  */
-        
+vector<Mesh> mesh ;
+int id = -1;
+Vector3 position;
+   
 /* -- LOCAL VARIABLES ---------------------------------------------------- */
 
 
@@ -84,8 +87,8 @@ void makeRayPicking(int x, int y)
 double collisionRayAndMesh (Mesh mesh) // return -1 if not, k > 0 if true with k is smallest distance from start to collisionPoints
 {
      // mesh have center and egde length
-     Vector3 center; // = mesh.center;
-     double egdeLength; // = mesh.egdeLength;
+     Vector3 center = mesh.center;
+     double egdeLength = mesh.edgeLength;
      Vector3 normalVectorPlane[] = {Vector3(0,0,1) , Vector3(0,0,-1) , Vector3(0,1,0) , Vector3(0,-1,0) , Vector3(1,0,0) , Vector3(-1,0,0)};
      Vector3 centerPlane;
      
@@ -95,15 +98,23 @@ double collisionRayAndMesh (Mesh mesh) // return -1 if not, k > 0 if true with k
      bool collison = false;
      for (int i = 0;i < 6 ; i ++)
      {
-         centerPlane = center + normalVectorPlane[i] *( egdeLength/2);
+         centerPlane = center + normalVectorPlane[i] *( egdeLength/2.0);
+         //cout<<"\n"<<center.x<<" "<<center.y<<" " <<center.z<<"\n";
+ 
+         //cout<<"\n"<<centerPlane.x<<" "<<centerPlane.y<<" " <<centerPlane.z<<"\n";
+ 
          
          double k;
          k = ((centerPlane - m_start) *( normalVectorPlane[i])) / (rayU *( normalVectorPlane[i]));
          pointCollision = m_start + rayU * k;
          
+         glBegin(GL_POINTS);
+         glVertex3f(pointCollision.x,pointCollision.y,pointCollision.z);
+         glEnd();
          Vector3 vetorCollision = pointCollision - centerPlane;
-         if( fabs(vetorCollision. x) < 1 && fabs(vetorCollision. y) < 1 && fabs(vetorCollision. z) < 1)
+         if( fabs(vetorCollision. x) < egdeLength/2 && fabs(vetorCollision. y) < egdeLength/2 && fabs(vetorCollision. z) < egdeLength/2)
          {
+             //  cout<<"\n"<<vetorCollision.x<<" "<<vetorCollision.y<<" " <<vetorCollision.z<<"\n";
              collison = true;
              double dist = pointCollision.Distance(m_start);
              if(dist < dst) dst = dist;
@@ -123,6 +134,7 @@ int idOfSelectedMesh(vector<Mesh> mesh)
         int meshID = -1;
         for(int i = 0;i< mesh.size() ;i++)
         {
+                cout<< i<<"\n";
                 double dst = collisionRayAndMesh (mesh[i]);
                 if( dst > 0)
                 {
@@ -149,6 +161,8 @@ void mouse(int button, int state, int x, int y)
       case GLUT_LEFT_BUTTON:
          if (state == GLUT_DOWN) {
             makeRayPicking(x,y);
+            id = idOfSelectedMesh(mesh);
+            cout<< id;
          }
          break;
       case GLUT_RIGHT_BUTTON:
@@ -194,11 +208,16 @@ void myInit()  {
   glPointSize( 6.0 );
   glMatrixMode( GL_PROJECTION );
   glLoadIdentity( );
-  glOrtho (-2, 2, -2, 2, 0, 10);
+  glOrtho (-4, 4, -4, 4, 0, 10);
   glMatrixMode( GL_MODELVIEW );
   phi = PI/6;
   theta = PI/4;
-  
+  Vector3 vvv[] = {Vector3(1,1,1),Vector3(1,1,-1),Vector3(1,1,0),Vector3(1,0,1),Vector3(1,0,-1),Vector3(1,0,0),Vector3(1,-1,1),Vector3(1,-1,-1),Vector3(1,-1,0),
+                  Vector3(-1,1,1),Vector3(-1,1,-1),Vector3(-1,1,0),Vector3(-1,0,1),Vector3(-1,0,-1),Vector3(-1,0,0),Vector3(-1,-1,1),Vector3(-1,-1,-1),Vector3(-1,-1,0),
+                  Vector3(0,1,1),Vector3(0,1,-1),Vector3(0,1,0),Vector3(0,0,1),Vector3(0,0,-1),Vector3(0,0,0),Vector3(0,-1,1),Vector3(0,-1,-1),Vector3(0,-1,0)                  
+                  };
+  for(int i= 0 ;i<27;i++)
+          mesh.push_back(Mesh(vvv[i], 1));
   
 }
 
@@ -236,16 +255,13 @@ void myDisplay( void )  {
 	 glVertex3f(0,0,2);
 	 glVertex3f(0,0,-2);
 	 glEnd();
+	 for(int i = 0;i<mesh.size();i++)
+     {
+             glColor3f(0,0,i*0.03);
+             mesh[i].drawMesh();
+     }
 	 
-	 glPushMatrix();
-     glTranslatef (1, 0, 0); 
-	 glutWireCube (0.5);
-	 
-	 glTranslatef (-2, 0, 0);
-	 glutWireSphere (0.5, 20, 20);
-	 glPopMatrix();
-	 
-	// Sleep(100);
+	 Sleep(50);
 	 glutPostRedisplay();
      glFlush();
 }
@@ -262,22 +278,57 @@ void myDisplay( void )  {
 
 void myKeyboard(unsigned char theKey,int,int)
 {
-  
+  if(id>=0){
+  float x = mesh[id].center.x;
+  float y = mesh[id].center.y;
+  float z = mesh[id].center.z;
+  if(mesh[id].sumAngle == 0)
   switch(theKey)
   {
+                case 'x':
+                     for(int i = 0;i<mesh.size();i++)
+                     {
+                             if(mesh[i].center.x == x)
+                             {                   
+                                                 cout<< i<<" ";
+                                                 cout<<mesh[i].center.x<<" "<<mesh[i].center.y<<" "<<mesh[i].center.z<<"\n";
+                                                 mesh[i].rotateMesh(1); 
+                                                 cout<<mesh[i].center.x<<" "<<mesh[i].center.y<<" "<<mesh[i].center.z<<"\n";
+                                                    
+                             }
+                     }
+                     break;    
+                case 'y':
+                     for(int i = 0;i<mesh.size();i++)
+                     {
+                             if(mesh[i].center.y == y)
+                                                 mesh[i].rotateMesh(2);    
+                     }
+                     //mesh[id].rotateMesh(1);  
+                     break;
+                case 'z':
+                     for(int i = 0;i<mesh.size();i++)
+                     {
+                             if(mesh[i].center.z == z)
+                                                 mesh[i].rotateMesh(3);    
+                     }
+                     //mesh[id].rotateMesh(1);  
+                     break;
+  }
+  }               
+   switch(theKey)
+  {               
                 case 'u':
                      phi -= PI/100;                     
                      break;
                 case 'd':
                      phi += PI/100;                     
                      break;
-                     break;
                 case 'l':
                      theta -= PI/100;                     
                      break;
                 case 'r':
                      theta += PI/100;                     
-                     break;
                      break;
                 case 'e': exit(-1); //terminate the program
                 default: break; // do nothing
