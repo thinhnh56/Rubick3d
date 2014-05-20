@@ -17,7 +17,7 @@ const int WIDTH = 600;
 using namespace std;
 
 const float PI = 3.1416;
-float distanceToOrigin = 20;
+float distanceToOrigin = 150;
 float phi, theta;
 float ex, ey, ez;
 float dx, dy, dz;
@@ -137,48 +137,34 @@ void mouse(int button, int state, int x, int y) {
 		break;
 	default:
 		break;
-
 	}
 }
 
 void myInit() {
-	glShadeModel(GL_SMOOTH);
+	glEnable(GL_LINE_SMOOTH);
+	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glEnable(GL_DEPTH_TEST);
+	glShadeModel(GL_SMOOTH);
 
-	GLfloat amb0[ ] = {0.2, 0.4, 0.6, 1.0};
-
-
-	glClearColor(0.1, 0.1, 0.1, 0.0);
-	glPointSize(6.0);
+	glClearColor(0.3, 0.3, 0.3, 0.0);
 	glMatrixMode( GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(60, -60, 60, -60, -100, 100);
+	gluPerspective(90, WIDTH / HEIGHT, 0.1, 2000);
 	glMatrixMode( GL_MODELVIEW);
-	phi = PI / 6;
-	theta = PI / 4;
+	glLoadIdentity();
+
+	phi = -PI / 8;
+	theta = PI/8;
 
 	m.getMesh("Rubik's Cube.obj", "Rubik's Cube.mtl");
-	//m.toString();
 	for (int i = 0; i < (int) m.componentMesh.size(); i++) {
 		m.componentMesh[i].computeCenter();
 		mesh.push_back(m.componentMesh[i]);
 	}
 	m.toString();
-}
-
-void drawCondinate() {
-	glBegin(GL_LINES);
-	glColor3f(1, 0, 0);
-	glVertex3f(-0, 0, 0);
-	glVertex3f(100, 0, 0);
-	glColor3f(0, 1, 0);
-	glVertex3f(0, -15, 0);
-	glVertex3f(0, 100, 0);
-	glColor3f(0, 0, 1);
-	glVertex3f(0, 0, -5);
-	glVertex3f(0, 0, 1000);
-	glEnd();
 }
 
 void myDisplay(void) {
@@ -193,7 +179,7 @@ void myDisplay(void) {
 	dz = sin(phi);
 	gluLookAt(ex, ey, ez, 0, 0, 0, dx, dy, dz);
 	for (int i = 0; i < (int) mesh.size(); i++) {
-			mesh[i].drawMesh();
+		mesh[i].drawMesh();
 	}
 	glutPostRedisplay();
 	glFlush();
@@ -236,10 +222,10 @@ void myKeyboard(unsigned char theKey, int, int) {
 			}
 	}
 	switch (theKey) {
-	case 's':
+	case 'w':
 		phi -= PI / 100;
 		break;
-	case 'w':
+	case 's':
 		phi += PI / 100;
 		break;
 	case 'd':
@@ -247,6 +233,12 @@ void myKeyboard(unsigned char theKey, int, int) {
 		break;
 	case 'a':
 		theta += PI / 100;
+		break;
+	case 'q':
+		distanceToOrigin += 5;
+		break;
+	case 'e':
+		distanceToOrigin -= 5;
 		break;
 	case ' ':
 		exit(-1); //terminate the program
@@ -256,18 +248,13 @@ void myKeyboard(unsigned char theKey, int, int) {
 }
 
 int main(int argc, char *argv[]) {
-	// Initialize GLUT.
 	glutInit(&argc, argv);
-	// Set the mode to draw in.
 	glutInitDisplayMode( GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
-	// Set the window size in screen pixels.
 	glutInitWindowSize(WIDTH, HEIGHT);
-	// Set the window position in screen pixels.
 	glutInitWindowPosition(150, 150);
-	// Create the window.
 	glutCreateWindow("Rubik");
-	// Set the callback funcion to call when we need to draw something.
-
+	glViewport(0, 0, WIDTH, HEIGHT);
+	// Assign Functions
 	glutDisplayFunc(myDisplay);
 	glutMouseFunc(mouse);
 	glutKeyboardFunc(myKeyboard);

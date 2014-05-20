@@ -9,7 +9,7 @@
 const int addAngle = 10;
 const float PI = 3.14159265;
 const float INITLENGTH = 35.3428;
-const float RATE = 0.5;
+const float RATE = 1;
 /*
  * Mesh.cpp
  *
