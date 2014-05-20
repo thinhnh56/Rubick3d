@@ -1,13 +1,4 @@
-#include <windows.h>
-#include <gl/gl.h>
-#include <gl/glu.h>
-#include <gl/glut.h>
-#include <math.h>
-#include <cstdlib>
-#include <ctime>
-#include <fstream>
-#include <iostream>
-
+#include "stdafx.h"
 #include "Mesh.h"
 #include "Vector3.h"
 
@@ -141,6 +132,7 @@ void mouse(int button, int state, int x, int y) {
 }
 
 void myInit() {
+	// Chong rang cua
 	glEnable(GL_LINE_SMOOTH);
 	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 	glEnable(GL_BLEND);
@@ -148,6 +140,12 @@ void myInit() {
 
 	glEnable(GL_DEPTH_TEST);
 	glShadeModel(GL_SMOOTH);
+
+	// Anh sang
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_COLOR_MATERIAL);
 
 	glClearColor(0.3, 0.3, 0.3, 0.0);
 	glMatrixMode( GL_PROJECTION);
@@ -159,12 +157,14 @@ void myInit() {
 	phi = -PI / 8;
 	theta = PI/8;
 
-	m.getMesh("Rubik's Cube.obj", "Rubik's Cube.mtl");
+	m.getMesh("Rubik's Cube.obj");
+	m.loadMtl("Rubik's Cube.mtl");
 	for (int i = 0; i < (int) m.componentMesh.size(); i++) {
+		m.componentMesh[i].materials = m.materials;
 		m.componentMesh[i].computeCenter();
 		mesh.push_back(m.componentMesh[i]);
 	}
-	m.toString();
+	//m.toString();
 }
 
 void myDisplay(void) {
