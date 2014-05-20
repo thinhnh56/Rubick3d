@@ -24,37 +24,42 @@ using namespace std;
 struct Face{
 	vector<int> vertexIndex;
 	vector<int> normalIndex;
+	int mtlIndex;
 };
-/*struct Vec3{
-	float x, y, z;
-};
-struct Vec3i{
-	int x, y, z;
-};*/
 
+struct Material{
+	string name;
+	float Ka[3];
+	float Kd[3];
+	float Ks[3];
+	float Ns;
+};
 class Mesh{
 private:
 	string meshFile;
+	Material materials[100];
 	vector<Vector3> vertex;
 	vector<Vector3> normalVec;
 	vector<Face> face;
-	
 	Vector3 rotatedAngle;
+	
 public:
+       vector<Mesh> componentMesh;
        float sumAngle;
        Vector3 center;
        float edgeLength;
        Mesh(Vector3 ,float);
-	bool getMesh(const char * fileName);	
-	void drawFace();
-	void rotateMesh(int xyz);
-	void calculateRotateMesh(int xyz);
-	void drawMesh();
-	
-	void toString();
+       Mesh();
+       void loadMtl(const char* mtlFile);
+	   bool getMesh(const char * fileName, const char*);	
+	   void drawFace();
+	   void drawFaces();
+	   void rotateMesh(int xyz);
+	   void calculateRotateMesh(int xyz);
+	   void drawMesh();
+	   void computeCenter();
+	   void toString();
 };
-
-
 
 
 #endif /* MESH_H_ */

@@ -37,7 +37,7 @@ using namespace std;
 /* -- GLOBAL VARIABLES --------------------------------------------------- */
 
 const float PI = 3.1416;
-float distanceToOrigin = 5;
+float distanceToOrigin = 20;
 float phi,theta;
 float ex ,ey ,ez ;
 float dx ,dy ,dz ;
@@ -45,11 +45,15 @@ float dx ,dy ,dz ;
 Vector3 m_start, m_end;
 GLdouble wx, wy, wz;  /*  returned world x, y, z coords  */
 GLdouble wx1, wy1, wz1;  /*  returned world x, y, z coords  */
+Mesh m;
 vector<Mesh> mesh ;
+
 int id = -1;
 Vector3 position;
    
 /* -- LOCAL VARIABLES ---------------------------------------------------- */
+
+
 
 
 /*A position 2d of mouse is a ray in world view.
@@ -99,10 +103,6 @@ double collisionRayAndMesh (Mesh mesh) // return -1 if not, k > 0 if true with k
      for (int i = 0;i < 6 ; i ++)
      {
          centerPlane = center + normalVectorPlane[i] *( egdeLength/2.0);
-         //cout<<"\n"<<center.x<<" "<<center.y<<" " <<center.z<<"\n";
- 
-         //cout<<"\n"<<centerPlane.x<<" "<<centerPlane.y<<" " <<centerPlane.z<<"\n";
- 
          
          double k;
          k = ((centerPlane - m_start) *( normalVectorPlane[i])) / (rayU *( normalVectorPlane[i]));
@@ -208,16 +208,25 @@ void myInit()  {
   glPointSize( 6.0 );
   glMatrixMode( GL_PROJECTION );
   glLoadIdentity( );
-  glOrtho (-4, 4, -4, 4, 0, 10);
+  //glOrtho (-, 4, -4, 4, 0, 10);
+  glOrtho(40, -40, 40, -40, 0, 50);
   glMatrixMode( GL_MODELVIEW );
   phi = PI/6;
   theta = PI/4;
-  Vector3 vvv[] = {Vector3(1,1,1),Vector3(1,1,-1),Vector3(1,1,0),Vector3(1,0,1),Vector3(1,0,-1),Vector3(1,0,0),Vector3(1,-1,1),Vector3(1,-1,-1),Vector3(1,-1,0),
+  
+  m.getMesh("Rubik's Cube.obj", "Rubik's Cube.mtl");
+  //m.toString();
+  for(int i= 0 ;i<m.componentMesh.size();i++)
+  {
+          m.componentMesh[i].computeCenter();
+          mesh.push_back(m.componentMesh[i]);
+  }
+/*  Vector3 vvv[] = {Vector3(1,1,1),Vector3(1,1,-1),Vector3(1,1,0),Vector3(1,0,1),Vector3(1,0,-1),Vector3(1,0,0),Vector3(1,-1,1),Vector3(1,-1,-1),Vector3(1,-1,0),
                   Vector3(-1,1,1),Vector3(-1,1,-1),Vector3(-1,1,0),Vector3(-1,0,1),Vector3(-1,0,-1),Vector3(-1,0,0),Vector3(-1,-1,1),Vector3(-1,-1,-1),Vector3(-1,-1,0),
                   Vector3(0,1,1),Vector3(0,1,-1),Vector3(0,1,0),Vector3(0,0,1),Vector3(0,0,-1),Vector3(0,0,0),Vector3(0,-1,1),Vector3(0,-1,-1),Vector3(0,-1,0)                  
                   };
   for(int i= 0 ;i<27;i++)
-          mesh.push_back(Mesh(vvv[i], 1));
+          mesh.push_back(Mesh(vvv[i], 1));*/
   
 }
 
@@ -248,16 +257,21 @@ void myDisplay( void )  {
 	 glBegin(GL_LINES);
 	// glVertex3f(wx,wy,wz);
 	 //glVertex3f(wx1,wy1,wz1);
-	 glVertex3f(-2,0,0);
-	 glVertex3f(2,0,0);
-	 glVertex3f(0,2,0);
-	 glVertex3f(0,-2,0);
-	 glVertex3f(0,0,2);
-	 glVertex3f(0,0,-2);
+	 glColor3f(1,0,0);
+	 glVertex3f(-0,0,0);
+	 glVertex3f(100,0,0);
+	 glColor3f(0,1,0);
+	 glVertex3f(0,-15,0);
+	 glVertex3f(0,100,0);
+	 glColor3f(0,0,1);
+	 glVertex3f(0,0,-5);
+	 glVertex3f(0,0,1000);
 	 glEnd();
 	 for(int i = 0;i<mesh.size();i++)
      {
+             
              glColor3f(0,0,i*0.03);
+             //if(i != 2) mesh[i].drawFaces();
              mesh[i].drawMesh();
      }
 	 
