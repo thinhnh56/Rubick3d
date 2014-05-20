@@ -17,8 +17,7 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
-#include  "Vector3.h"
-#include "Point3.h"
+#include "Vector3.h"
 #define MESH_FILE "blablabla.obj"
 
 using namespace std;
@@ -27,9 +26,7 @@ struct Face{
 	vector<int> normalIndex;
 	int mtlIndex;
 };
-/*struct Vec3{
-	float x, y, z;
-};*/
+
 struct Material{
 	string name;
 	float Ka[3];
@@ -37,23 +34,32 @@ struct Material{
 	float Ks[3];
 	float Ns;
 };
-
 class Mesh{
 private:
-	Material materials[100];
-	vector<Mesh> componentMesh;
 	string meshFile;
+	Material materials[100];
 	vector<Vector3> vertex;
 	vector<Vector3> normalVec;
 	vector<Face> face;
+	Vector3 rotatedAngle;
+	
 public:
-	void loadMtl(const char* mtlFile);
-	bool getMesh(const char * fileName, const char* mtlFile);
-	void drawFace();
-	void toString();
+       vector<Mesh> componentMesh;
+       float sumAngle;
+       Vector3 center;
+       float edgeLength;
+       Mesh(Vector3 ,float);
+       Mesh();
+       void loadMtl(const char* mtlFile);
+	   bool getMesh(const char * fileName, const char*);
+	   void drawFace();
+	   void drawFaces();
+	   void rotateMesh(int xyz);
+	   void calculateRotateMesh(int xyz);
+	   void drawMesh();
+	   void computeCenter();
+	   void toString();
 };
-
-
 
 
 #endif /* MESH_H_ */

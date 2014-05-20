@@ -1,59 +1,388 @@
-#include <Windows.h>
-#include <iostream>
-#include "Camera.h"
-#include "gl/glut.h"
+/* Module      : MainFile.cpp
+ * Author      : Chu Van Tao
+ * Email       : 
+ * Course      : Computer Graphics
+ *
+ * Description : 
+ *
+ *
+ * Date        : 
+ *
+ * History:
+ * Revision      Date          Changed By
+ * --------      ----------    ----------
+ * 01.00         ?????          ???
+ * First release.
+ *
+ */
+
+/* -- INCLUDE FILES ------------------------------------------------------ */
+#include <windows.h>
 #include <gl/gl.h>
+#include <gl/glu.h>
+#include <gl/glut.h>
+#include <math.h>
+#include <cstdlib>
+#include <ctime>
+#include <fstream>
+#include <iostream>
+
 #include "Mesh.h"
+#include "Vector3.h"
 
 using namespace std;
 
-const int HEIGHT = 640;
-const int WIDTH = 480;
-const char* TITLE = "Rubik";
+/* -- DATA STRUCTURES ---------------------------------------------------- */
 
-Camera camera;
-float angle = 1;
+/* -- GLOBAL VARIABLES --------------------------------------------------- */
+
+const float PI = 3.1416;
+float distanceToOrigin = 20;
+float phi,theta;
+float ex ,ey ,ez ;
+float dx ,dy ,dz ;
+
+Vector3 m_start, m_end;
+GLdouble wx, wy, wz;  /*  returned world x, y, z coords  */
+GLdouble wx1, wy1, wz1;  /*  returned world x, y, z coords  */
 Mesh m;
+vector<Mesh> mesh ;
 
-void modelRender() {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity();
+int id = -1;
+Vector3 position;
+
+/* -- LOCAL VARIABLES ---------------------------------------------------- */
+
+
+
+
+/*A position 2d of mouse is a ray in world view.
+ *This function create this ray (2 points in ray)
+ */
+void makeRayPicking(int x, int y)
+{
+   GLint viewport[4];
+   GLdouble mvmatrix[16], projmatrix[16];
+   GLint realy;  /*  OpenGL y coordinate position  */
+
+   glGetIntegerv(GL_VIEWPORT, viewport);
+   glGetDoublev(GL_MODELVIEW_MATRIX, mvmatrix);
+   glGetDoublev(GL_PROJECTION_MATRIX, projmatrix);
+/*  note viewport[3] is height of window in pixels  */
+    realy = viewport[3] - (GLint) y - 1;
+    printf("Coordinates at cursor are (%4d, %4d)\n",
+               x, realy);
+    gluUnProject((GLdouble) x, (GLdouble) realy, 0.0,
+               mvmatrix, projmatrix, viewport, &wx, &wy, &wz);
+
+    m_start.set((float)wx,(float) wy,(float) wz);
+    printf("World coords at z=0.0 are (%f, %f, %f)\n",
+               m_start.x, m_start.y, m_start.z);
+
+    gluUnProject((GLdouble) x, (GLdouble) realy, 1.0,
+               mvmatrix, projmatrix, viewport, &wx1, &wy1, &wz1);
+
+    m_end.set((float)wx1,(float) wy1,(float) wz1);
+    printf("World coords at z=1.0 are (%f, %f, %f)\n",
+               m_end.x, m_end.y, m_end.z);
 
 }
 
-void keyboardFunc(unsigned char key, int x, int y) {
+double collisionRayAndMesh (Mesh mesh) // return -1 if not, k > 0 if true with k is smallest distance from start to collisionPoints
+{
+     // mesh have center and egde length
+     Vector3 center = mesh.center;
+     double egdeLength = mesh.edgeLength;
+     Vector3 normalVectorPlane[] = {Vector3(0,0,1) , Vector3(0,0,-1) , Vector3(0,1,0) , Vector3(0,-1,0) , Vector3(1,0,0) , Vector3(-1,0,0)};
+     Vector3 centerPlane;
 
-	switch (key) {
-	case 'd':
-	case 'D':
-		camera.move(Vector3(0, 1, 0));
-		break;
-	case 'w':
-	case 'W':
-		camera.move(Vector3(1, 0, 0));
-		break;
-	case 'a':
-	case 'A':
-		camera.move(Vector3(0, -1, 0));
-		break;
-	case 's':
-	case 'S':
-		camera.move(Vector3(1, 0, 0));
-		break;
-	}
-	glutPostRedisplay();
+     Vector3 rayU = m_end - m_start;
+     Vector3 pointCollision;
+     double dst = 10000000.0;
+     bool collison = false;
+     for (int i = 0;i < 6 ; i ++)
+     {
+         centerPlane = center + normalVectorPlane[i] *( egdeLength/2.0);
+
+         double k;
+         k = ((centerPlane - m_start) *( normalVectorPlane[i])) / (rayU *( normalVectorPlane[i]));
+         pointCollision = m_start + rayU * k;
+
+         glBegin(GL_POINTS);
+         glVertex3f(pointCollision.x,pointCollision.y,pointCollision.z);
+         glEnd();
+         Vector3 vetorCollision = pointCollision - centerPlane;
+         if( fabs(vetorCollision. x) < egdeLength/2 && fabs(vetorCollision. y) < egdeLength/2 && fabs(vetorCollision. z) < egdeLength/2)
+         {
+             //  cout<<"\n"<<vetorCollision.x<<" "<<vetorCollision.y<<" " <<vetorCollision.z<<"\n";
+             collison = true;
+             double dist = pointCollision.Distance(m_start);
+             if(dist < dst) dst = dist;
+         }
+
+     }
+     if(collison) return dst;
+     return -1;
+
+
+
 }
 
-int main(int argc, char *argv[]) {
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-	glutInitWindowPosition(100, 150);
-	glutInitWindowSize(WIDTH, HEIGHT);
-	glutCreateWindow(TITLE);
+int idOfSelectedMesh(vector<Mesh> mesh)
+{
+        double minDistToStart = 10000000.0;
+        int meshID = -1;
+        for(int i = 0;i< mesh.size() ;i++)
+        {
+                cout<< i<<"\n";
+                double dst = collisionRayAndMesh (mesh[i]);
+                if( dst > 0)
+                {
+                    if (dst < minDistToStart)
+                    {
+                            minDistToStart = dst;
+                            meshID = i;
+                    }
 
-	// Register callback
-	glutDisplayFunc(modelRender);
+                }
+        }
+        return meshID;
 
-	glutMainLoop();
-	return 0;
 }
+
+
+void mouse(int button, int state, int x, int y)
+{
+   GLint viewport[4];
+   GLdouble mvmatrix[16], projmatrix[16];
+   GLint realy;  /*  OpenGL y coordinate position  */
+
+   switch (button) {
+      case GLUT_LEFT_BUTTON:
+         if (state == GLUT_DOWN) {
+            makeRayPicking(x,y);
+            id = idOfSelectedMesh(mesh);
+            cout<< id;
+         }
+         break;
+      case GLUT_RIGHT_BUTTON:
+         if (state == GLUT_DOWN)
+            exit(0);
+         break;
+      default:
+         break;
+
+         }
+}
+/* ----------------------------------------------------------------------- */
+/* Function    : void setWindow( GLint x,GLint y,GLint z,GLint t )
+ *
+ * Description : set a window to draw and use for glViewport
+ *
+ * Parameters  :
+ *
+ * Returns     : void
+ */
+
+void setWindow( GLdouble x,GLdouble y,GLdouble z,GLdouble t )  {
+  glMatrixMode( GL_PROJECTION );
+  glLoadIdentity( );
+  gluOrtho2D( x, y, z, t );
+}
+
+
+/* ----------------------------------------------------------------------- */
+/* Function    : void myInit( )
+ *
+ * Description : Initialize OpenGL and the window where things will be
+ *               drawn.
+ *
+ * Parameters  : void
+ *
+ * Returns     : void
+ */
+
+void myInit()  {
+  glClearColor( 1.0, 1.0, 1.0, 0.0 );
+  glColor3f( 0.0, 0.0, 0.0 );
+  glPointSize( 6.0 );
+  glMatrixMode( GL_PROJECTION );
+  glLoadIdentity( );
+  //glOrtho (-, 4, -4, 4, 0, 10);
+  glOrtho(40, -40, 40, -40, 0, 50);
+  glMatrixMode( GL_MODELVIEW );
+  phi = PI/6;
+  theta = PI/4;
+
+  m.getMesh("Rubik's Cube.obj", "Rubik's Cube.mtl");
+  //m.toString();
+  for(int i= 0 ;i<m.componentMesh.size();i++)
+  {
+          m.componentMesh[i].computeCenter();
+          mesh.push_back(m.componentMesh[i]);
+  }
+/*  Vector3 vvv[] = {Vector3(1,1,1),Vector3(1,1,-1),Vector3(1,1,0),Vector3(1,0,1),Vector3(1,0,-1),Vector3(1,0,0),Vector3(1,-1,1),Vector3(1,-1,-1),Vector3(1,-1,0),
+                  Vector3(-1,1,1),Vector3(-1,1,-1),Vector3(-1,1,0),Vector3(-1,0,1),Vector3(-1,0,-1),Vector3(-1,0,0),Vector3(-1,-1,1),Vector3(-1,-1,-1),Vector3(-1,-1,0),
+                  Vector3(0,1,1),Vector3(0,1,-1),Vector3(0,1,0),Vector3(0,0,1),Vector3(0,0,-1),Vector3(0,0,0),Vector3(0,-1,1),Vector3(0,-1,-1),Vector3(0,-1,0)
+                  };
+  for(int i= 0 ;i<27;i++)
+          mesh.push_back(Mesh(vvv[i], 1));*/
+
+}
+
+
+
+/* ----------------------------------------------------------------------- */
+/* Function    : void myDisplay( void )
+ *
+ * Description : This function gets called everytime the window needs to
+ *               be redrawn.
+ *
+ * Parameters  : void
+ *
+ * Returns     : void
+ */
+
+void myDisplay( void )  {
+     glClear(GL_COLOR_BUFFER_BIT);   // Erase everything
+     glLoadIdentity();
+
+ 	 ez = distanceToOrigin * cos(phi);
+     ex = distanceToOrigin * sin(phi)*sin(theta);
+     ey = distanceToOrigin * sin(phi)*cos(theta);
+     dx = -cos (phi) * sin (theta);
+     dy = -cos (phi) * cos (theta);
+     dz = sin (phi);
+     gluLookAt (ex,ey,ez, 0, 0, 0, dx, dy, dz);
+	 glBegin(GL_LINES);
+	// glVertex3f(wx,wy,wz);
+	 //glVertex3f(wx1,wy1,wz1);
+	 glColor3f(1,0,0);
+	 glVertex3f(-0,0,0);
+	 glVertex3f(100,0,0);
+	 glColor3f(0,1,0);
+	 glVertex3f(0,-15,0);
+	 glVertex3f(0,100,0);
+	 glColor3f(0,0,1);
+	 glVertex3f(0,0,-5);
+	 glVertex3f(0,0,1000);
+	 glEnd();
+	 for(int i = 0;i<mesh.size();i++)
+     {
+
+             glColor3f(0,0,i*0.03);
+             //if(i != 2) mesh[i].drawFaces();
+             mesh[i].drawMesh();
+     }
+
+	 Sleep(50);
+	 glutPostRedisplay();
+     glFlush();
+}
+
+/* ----------------------------------------------------------------------- */
+/* Function    : void myKeyboard(unsigned char theKey, int mouseX, int mouseY)
+ *
+ * Description : Control by keyboard
+ *
+ * Parameters  : void
+ *
+ * Returns     : void
+ */
+
+void myKeyboard(unsigned char theKey,int,int)
+{
+  if(id>=0){
+  float x = mesh[id].center.x;
+  float y = mesh[id].center.y;
+  float z = mesh[id].center.z;
+  if(mesh[id].sumAngle == 0)
+  switch(theKey)
+  {
+                case 'x':
+                     for(int i = 0;i<mesh.size();i++)
+                     {
+                             if(mesh[i].center.x == x)
+                             {
+                                                 cout<< i<<" ";
+                                                 cout<<mesh[i].center.x<<" "<<mesh[i].center.y<<" "<<mesh[i].center.z<<"\n";
+                                                 mesh[i].rotateMesh(1);
+                                                 cout<<mesh[i].center.x<<" "<<mesh[i].center.y<<" "<<mesh[i].center.z<<"\n";
+
+                             }
+                     }
+                     break;
+                case 'y':
+                     for(int i = 0;i<mesh.size();i++)
+                     {
+                             if(mesh[i].center.y == y)
+                                                 mesh[i].rotateMesh(2);
+                     }
+                     //mesh[id].rotateMesh(1);
+                     break;
+                case 'z':
+                     for(int i = 0;i<mesh.size();i++)
+                     {
+                             if(mesh[i].center.z == z)
+                                                 mesh[i].rotateMesh(3);
+                     }
+                     //mesh[id].rotateMesh(1);
+                     break;
+  }
+  }
+   switch(theKey)
+  {
+                case 'u':
+                     phi -= PI/100;
+                     break;
+                case 'd':
+                     phi += PI/100;
+                     break;
+                case 'l':
+                     theta -= PI/100;
+                     break;
+                case 'r':
+                     theta += PI/100;
+                     break;
+                case 'e': exit(-1); //terminate the program
+                default: break; // do nothing
+  }
+}
+
+
+/* ----------------------------------------------------------------------- */
+/* Function    : int main( int argc, char** argv )
+ *
+ * Description : This is the main function. It sets up the rendering
+ *               context, and then reacts to user events.
+ *
+ * Parameters  : int argc     : Number of command-line arguments.
+ *               char *argv[] : Array of command-line arguments.
+ *
+ * Returns     : int : Return code to pass to the shell.
+ */
+
+int main( int argc, char *argv[] )  {
+  // Initialize GLUT.
+  glutInit( &argc, argv );
+  // Set the mode to draw in.
+  glutInitDisplayMode( GLUT_SINGLE | GLUT_RGB );
+  // Set the window size in screen pixels.
+  glutInitWindowSize( 600, 600 );
+  // Set the window position in screen pixels.
+  glutInitWindowPosition( 150, 150 );
+  // Create the window.
+  glutCreateWindow( "press u,d,l,r to control camera" );
+  // Set the callback funcion to call when we need to draw something.
+
+  glutDisplayFunc(myDisplay);
+  glutMouseFunc(mouse);
+  glutKeyboardFunc(myKeyboard);
+
+  myInit();
+  // Now that we have set everything up, loop responding to events.
+  glutMainLoop( );
+
+}
+
+/* ----------------------------------------------------------------------- */
