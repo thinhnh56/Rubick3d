@@ -8,7 +8,7 @@ const int WIDTH = 600;
 using namespace std;
 
 const float PI = 3.1416;
-float distanceToOrigin = 150;
+float distanceToOrigin = 225;
 float phi, theta;
 float ex, ey, ez;
 float dx, dy, dz;
@@ -81,7 +81,6 @@ double collisionRayAndMesh(Mesh mesh) // return -1 if not, k > 0 if true with k 
 		if (fabs(vetorCollision.x) < egdeLength / 2
 				&& fabs(vetorCollision.y) < egdeLength / 2
 				&& fabs(vetorCollision.z) < egdeLength / 2) {
-			//  cout<<"\n"<<vetorCollision.x<<" "<<vetorCollision.y<<" " <<vetorCollision.z<<"\n";
 			collison = true;
 			double dist = pointCollision.Distance(m_start);
 			if (dist < dst)
@@ -132,30 +131,48 @@ void mouse(int button, int state, int x, int y) {
 }
 
 void myInit() {
-	// Chong rang cua
-	glEnable(GL_LINE_SMOOTH);
+	// OpenGL init
+	// Stuff
+	glShadeModel(GL_SMOOTH);
+	glClearColor(0.3, 0.3, 0.3, 0.0);
+	glClearDepth(1.0f);
+	glDepthFunc(GL_LEQUAL);
 	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+	glEnable(GL_LINE_SMOOTH);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glEnable(GL_DEPTH_TEST);
 	glShadeModel(GL_SMOOTH);
-
+	glClearDepth(1.0f);
+	glDepthFunc(GL_LEQUAL);
 	// Anh sang
+	// Lighting
+	GLfloat light_ambient[] = { 0.5, 0.5, 0.5, 1.0 };
+	GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat light_position[] = { 0, 0.0, 1000.0, 1.0 };
+
+	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
+	glShadeModel(GL_SMOOTH);
+
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_COLOR_MATERIAL);
 
-	glClearColor(0.3, 0.3, 0.3, 0.0);
 	glMatrixMode( GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(90, WIDTH / HEIGHT, 0.1, 2000);
 	glMatrixMode( GL_MODELVIEW);
 	glLoadIdentity();
 
-	phi = -PI / 8;
-	theta = PI/8;
+	phi = 0.989604;
+	theta = -2.37191;
 
 	m.getMesh("Rubik's Cube.obj");
 	m.loadMtl("Rubik's Cube.mtl");
@@ -235,9 +252,11 @@ void myKeyboard(unsigned char theKey, int, int) {
 		theta += PI / 100;
 		break;
 	case 'q':
+		if (distanceToOrigin < 275)
 		distanceToOrigin += 5;
 		break;
 	case 'e':
+		if (distanceToOrigin > 110)
 		distanceToOrigin -= 5;
 		break;
 	case ' ':

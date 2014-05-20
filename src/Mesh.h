@@ -39,7 +39,7 @@ private:
 	vector<string> mtlFile;
 	string meshFile;
 	vector<Vector3> vertices;
-	vector<Vector3> normalVectors;
+	vector<Vector3> normals;
 	vector<Face> faces;
 	Vector3 rotatedAngle;
 	void parseMaterial(string mtlName);

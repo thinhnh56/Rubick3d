@@ -1,24 +1,59 @@
-//white
-newmtl 25
-Ka  1 1 1
-//red
-newmtl 26
-Ka	1 0 0
-//green
-newmtl 27
-Ka  0 1 0
-//blue
-newmtl 28
-Ka  0 0 1
-
-//yellow
-newmtl 29
-Ka	1 1 0
-
-//
-newmtl 30
-Ka  1 0 1
-
-//
-newmtl 31
-Ka	0 1 1
+# Max2Mtl Version 4.0 Mar 10th, 2001
+#
+# Multi/Sub 310 (4) to come 
+# sliver
+newmtl 0
+Ka  0.19225	0.19225	0.19225
+Kd  0.50754	0.50754	0.50754
+Ks  0.508273	0.508273	0.508273
+d  1.0
+Ns  0.4
+illum 2
+# cyan plastic
+newmtl 1
+Ka  0.0	0.1	0.06			
+Kd  0.0	0.50980392	0.50980392
+Ks  0.50196078	0.50196078	0.50196078
+d  1.0
+Ns  .25
+illum 2
+# green plastic
+newmtl 2
+Ka  0.0	0.0	0.0
+Kd  0.1	0.35	0.1
+Ks  0.45	0.55	0.45
+d  1.0
+Ns  0.25
+# red plastic
+newmtl 3
+Ka  0.0	0.0	0.0
+Kd  0.5	0.0	0.0
+Ks  0.7	0.6	0.6
+d  1.0
+Ns  0.25
+illum 2
+# white plastic
+newmtl 4
+Ka  0.0	0.0	0.0
+Kd  0.55	0.55	0.55
+Ks  0.70	0.70	0.70
+d  1.0
+Ns  0.25
+illum 2
+# yellow plastic
+newmtl 5
+Ka  0.0	0.0	0.0
+Kd  0.5	0.5	0.0
+Ks  0.60	0.60	0.50
+d  1.0
+Ns  0.25
+illum 2z
+# obsidian
+newmtl 6
+Ka  0.05375	0.05	0.06625
+Kd  0.18275	0.17	0.22525
+Ks  0.332741	0.328634	0.346435
+d  1.0
+Ns  0.3
+illum 2
+#
