@@ -29,10 +29,10 @@ struct Face{
 
 struct Material{
 	string name;
-	float Ka[3];
-	float Kd[3];
-	float Ks[3];
-	float Ns;
+	GLfloat Ka[3];
+	GLfloat Kd[3];
+	GLfloat Ks[3];
+	GLfloat Ns;
 };
 class Mesh{
 private:

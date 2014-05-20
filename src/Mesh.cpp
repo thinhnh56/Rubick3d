@@ -8,7 +8,8 @@
 
 const int addAngle = 10;
 const float PI = 3.14159265;
-const float initLength = 11.88;
+const float INITLENGTH = 35.3428;
+const float RATE = 0.5;
 /*
  * Mesh.cpp
  *
@@ -33,7 +34,7 @@ void Mesh::loadMtl(const char* mtlFile){
 		if (strcmp(header, "newmtl") == 0){
 			fscanf(file, " %d", &mtlIndex);
 			//cout << mtlIndex<< endl;
-			float x, y, z;
+
 			res = fscanf(file, "%s", header);
 			if (strcmp(header, "Ka") == 0){
 				fscanf(file, "  %f %f %f", &materials[mtlIndex].Ka[0], &materials[mtlIndex].Ka[1], &materials[mtlIndex].Ka[2]);
@@ -80,7 +81,7 @@ bool Mesh::getMesh(const char * fileName, const char* mtlFile){
 			tempVer.z = 0;
 			fscanf(file, " %f %f %f ", &tempVer.x, &tempVer.y, &tempVer.z);
 			//cout << tempVer.x << tempVer.y << tempVer.z << endl;
-			tempVer = tempVer/5;
+			tempVer = tempVer * RATE;
 			tempMesh->vertex.push_back(tempVer);
 
 		}
@@ -149,11 +150,11 @@ void Mesh::drawFace(){
 	float normal[9];
 	vector<float> tempFaceVertex;
 	vector<float> tempNormalVector;
-	for (int i=0; i<componentMesh.size() - 1; i++){
-		for (int j=0; j<componentMesh[i].face.size(); j++){
+	for (int i=0; i<(int)componentMesh.size() - 1; i++){
+		for (int j=0; j<(int)componentMesh[i].face.size(); j++){
 			tempFaceVertex.clear();
 			tempNormalVector.clear();
-			for (int k = 0; k<componentMesh[i].face[j].vertexIndex.size(); k++){
+			for (int k = 0; k< (int)componentMesh[i].face[j].vertexIndex.size(); k++){
 				Vector3 tempVer = componentMesh[i].vertex[componentMesh[i].face[j].vertexIndex[k]];
 				tempFaceVertex.push_back(tempVer.y);
 				tempFaceVertex.push_back(tempVer.z);
@@ -173,27 +174,22 @@ void Mesh::drawFace(){
 		}
 	}
 	glFlush();
-/*	glPushMatrix();  
-	glTranslatef (center.x, center.y, center.z); 
-    glutSolidCube (edgeLength);
-    glPopMatrix();*/
+
 }
 
 void Mesh::drawFaces()
 {
-     float faceVertex[9];
-	 float normal[9];
+     GLfloat faceVertex[9];
+	 GLfloat normal[9];
 	 vector<float> tempFaceVertex;
 	 vector<float> tempNormalVector;
-	
-     for (int j=0; j<face.size(); j++){
-         glMaterialfv(GL_FRONT, GL_SPECULAR, materials[face[j].mtlIndex].Ks);
-			glMaterialfv(GL_FRONT, GL_DIFFUSE, materials[face[j].mtlIndex].Kd);
-			glMaterialfv(GL_FRONT, GL_AMBIENT, materials[face[j].mtlIndex].Ka);
-			glMaterialf(GL_FRONT, GL_SHININESS, materials[face[j].mtlIndex].Ns);
+
+     for (int j=0; j<(int)face.size(); j++){
+
+
 			tempFaceVertex.clear();
 			tempNormalVector.clear();
-			for (int k = 0; k<face[j].vertexIndex.size(); k++){
+			for (int k = 0; k<(int)face[j].vertexIndex.size(); k++){
 				Vector3 tempVer = vertex[face[j].vertexIndex[k]];
 				tempFaceVertex.push_back(tempVer.x);
 				tempFaceVertex.push_back(tempVer.y);
@@ -205,33 +201,66 @@ void Mesh::drawFaces()
 			}
 			copy(tempFaceVertex.begin(), tempFaceVertex.end(), faceVertex );
 			copy(tempNormalVector.begin(), tempNormalVector.end(), normal);
+
+			if (face[j].mtlIndex == 25)
+				glColor3f(1, 1, 1);
+			if (face[j].mtlIndex == 26)
+				glColor3f(1, 0, 0);
+			if (face[j].mtlIndex == 27)
+				glColor3f(0, 1, 0);
+			if (face[j].mtlIndex == 28)
+				glColor3f(0, 0, 1);
+			if (face[j].mtlIndex == 29)
+				glColor3f(1, 1, 0);
+			if (face[j].mtlIndex == 30)
+				glColor3f(0, 1, 1);
+			if (face[j].mtlIndex == 31)
+				glColor3f(1, 0, 1);
 			glEnableClientState(GL_VERTEX_ARRAY);
 			glEnableClientState(GL_NORMAL_ARRAY);
 			glVertexPointer(3, GL_FLOAT, 0, faceVertex);
 			glNormalPointer(GL_FLOAT, 0,normal);
+
 			glDrawArrays(GL_TRIANGLES, 0, 9);
 			glDisableClientState(GL_VERTEX_ARRAY);
+
 		}
 }
 
 void Mesh::toString(){
-	for (int m =0; m<componentMesh.size(); m++){
+	for (int m =13; m<(int)/*componentMesh.size()*/14; m++){
 		cout << "component " << m << endl;
 		cout << "Mesh vertex" << endl;
-		for (int i=0; i<componentMesh[m].vertex.size(); ++i){
+		for (int i=0; i<(int)componentMesh[m].vertex.size(); ++i){
 			cout << componentMesh[m].vertex[i].x << " " << componentMesh[m].vertex[i].y << " " << componentMesh[m].vertex[i].z << endl;
 		}
 		cout << "Mesh normal"<< endl;
-		for (int i=0; i<componentMesh[m].normalVec.size(); i++){
+		for (int i=0; i<(int)componentMesh[m].normalVec.size(); i++){
 			cout << componentMesh[m].normalVec[i].x << " " << componentMesh[m].normalVec[i].y << " " << componentMesh[m].normalVec[i].z << endl;
 		}
 		cout << "Mesh Face" << endl;
-		for (int i=0; i<componentMesh[m].face.size(); ++i){
-			for (int j=0; j<componentMesh[m].face[i].normalIndex.size(); j++){
+		for (int i=0; i<(int)componentMesh[m].face.size(); ++i){
+			cout << "mtl" << componentMesh[m].face[i].mtlIndex << " ";
+			for (int j=0; j<(int)componentMesh[m].face[i].normalIndex.size(); j++){
 				cout << componentMesh[m].face[i].normalIndex[j] << "/" << componentMesh[m].face[i].vertexIndex[j] << " ";
 			}
 			cout << endl;
 		}
+	}
+
+	for (int i=0; i<100; i++){
+		cout << endl << "material " << i << endl;
+		cout << materials[i].Ka[0] << " ";
+		cout << materials[i].Ka[1] << " ";
+		cout << materials[i].Ka[2] << " ";
+		cout << endl;
+		cout << materials[i].Kd[0] << " ";
+		cout << materials[i].Kd[1] << " ";
+		cout << materials[i].Kd[2] << " ";
+		cout << endl;
+		cout << materials[i].Ks[0] << " ";
+		cout << materials[i].Ks[1] << " ";
+		cout << materials[i].Ks[2] << " ";
 	}
 }
 
@@ -245,7 +274,7 @@ Mesh::Mesh( Vector3 v, float l)
 }
 Mesh::Mesh()
 {
-            edgeLength = initLength;
+            edgeLength = INITLENGTH * RATE;
             rotatedAngle = Vector3(0,0,0);
             sumAngle = 0;
 }
@@ -271,25 +300,25 @@ void Mesh:: calculateRotateMesh(int xyz)
      
      if(xyz == 1)
      {
-            for(int i = 0;i<vertex.size();i++)
+            for(int i = 0;i<(int)vertex.size();i++)
                     vertex[i] = Vector3(vertex[i].x,-vertex[i].z,vertex[i].y);
-            for(int i = 0;i<this->normalVec.size();i++)
+            for(int i = 0;i<(int)this->normalVec.size();i++)
                     normalVec[i] = Vector3(normalVec[i].x,-normalVec[i].z,normalVec[i].y);
             center = Vector3(center.x,-center.z,center.y);
      }       
      if(xyz == 2)
      {
-            for(int i = 0;i<vertex.size();i++)
+            for(int i = 0;i<(int)vertex.size();i++)
                     vertex[i] = Vector3(vertex[i].z,vertex[i].y,-vertex[i].x);
-            for(int i = 0;i<this->normalVec.size();i++)
+            for(int i = 0;i<(int)this->normalVec.size();i++)
                     normalVec[i] = Vector3(normalVec[i].z,normalVec[i].y,-normalVec[i].x);
             center = Vector3(center.z,center.y,-center.x);
      }
      if(xyz == 3)
      {
-            for(int i = 0;i<vertex.size();i++)
+            for(int i = 0;i<(int)vertex.size();i++)
                     vertex[i] = Vector3(-vertex[i].y,vertex[i].x,vertex[i].z);
-            for(int i = 0;i<this->normalVec.size();i++)
+            for(int i = 0;i<(int)this->normalVec.size();i++)
                     normalVec[i] = Vector3(-normalVec[i].y,normalVec[i].x,normalVec[i].z);
             center = Vector3(-center.y,center.x,center.z);
      }
@@ -331,7 +360,7 @@ void Mesh::computeCenter()
      float amx = 0, duongx = 0;
      float amy = 0, duongy = 0;
      float amz = 0, duongz = 0;
-     for(int i = 0;i<vertex.size();i++)
+     for(int i = 0;i<(int)vertex.size();i++)
      {
              if(amx*duongx ==0){
              if(vertex[i].x < 0) amx = -1;

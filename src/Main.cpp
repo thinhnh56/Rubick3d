@@ -142,31 +142,18 @@ void mouse(int button, int state, int x, int y) {
 }
 
 void myInit() {
-	GLfloat light_position[] = { 50.0, 50.0, -50.0, 0.0 };
-	GLfloat light_ambient[] = { 1.0, 1.0, 1.0, 1.0 };
 	glShadeModel(GL_SMOOTH);
 
-//	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-//	glLightfv(GL_LIGHT0, GL_SPECULAR, light_ambient);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_COLOR_MATERIAL);
 
 	GLfloat amb0[ ] = {0.2, 0.4, 0.6, 1.0};
-	// define some colors
-	GLfloat diff0[ ] = {0.8, 0.9, 0.5, 1.0};
-	GLfloat spec0[ ] = { 1.0, 0.8, 1.0, 1.0};
-	glLightfv(GL_LIGHT0, GL_AMBIENT, amb0);
-	// attach them to LIGHT0
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, diff0);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, spec0);
+
 
 	glClearColor(0.1, 0.1, 0.1, 0.0);
 	glPointSize(6.0);
 	glMatrixMode( GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(60, -60, 60, -60, 0, 100);
+	glOrtho(60, -60, 60, -60, -100, 100);
 	glMatrixMode( GL_MODELVIEW);
 	phi = PI / 6;
 	theta = PI / 4;
@@ -177,6 +164,7 @@ void myInit() {
 		m.componentMesh[i].computeCenter();
 		mesh.push_back(m.componentMesh[i]);
 	}
+	m.toString();
 }
 
 void drawCondinate() {
@@ -205,7 +193,7 @@ void myDisplay(void) {
 	dz = sin(phi);
 	gluLookAt(ex, ey, ez, 0, 0, 0, dx, dy, dz);
 	for (int i = 0; i < (int) mesh.size(); i++) {
-		mesh[i].drawMesh();
+			mesh[i].drawMesh();
 	}
 	glutPostRedisplay();
 	glFlush();
