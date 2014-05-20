@@ -80,7 +80,7 @@ bool Mesh::getMesh(const char * fileName, const char* mtlFile){
 			tempVer.z = 0;
 			fscanf(file, " %f %f %f ", &tempVer.x, &tempVer.y, &tempVer.z);
 			//cout << tempVer.x << tempVer.y << tempVer.z << endl;
-			tempVer = tempVer/3;
+			tempVer = tempVer/5;
 			tempMesh->vertex.push_back(tempVer);
 
 		}
