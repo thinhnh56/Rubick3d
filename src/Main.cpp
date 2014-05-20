@@ -142,19 +142,25 @@ void mouse(int button, int state, int x, int y) {
 }
 
 void myInit() {
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
 	GLfloat light_position[] = { 50.0, 50.0, -50.0, 0.0 };
-	GLfloat light_ambient[] = { 1.0, 1.0, 1.0, 0.5 };
-	glClearColor(0.0, 0.0, 0.0, 0.0);
+	GLfloat light_ambient[] = { 1.0, 1.0, 1.0, 1.0 };
 	glShadeModel(GL_SMOOTH);
 
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, light_ambient);
+//	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+//	glLightfv(GL_LIGHT0, GL_SPECULAR, light_ambient);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_COLOR_MATERIAL);
+
+	GLfloat amb0[ ] = {0.2, 0.4, 0.6, 1.0};
+	// define some colors
+	GLfloat diff0[ ] = {0.8, 0.9, 0.5, 1.0};
+	GLfloat spec0[ ] = { 1.0, 0.8, 1.0, 1.0};
+	glLightfv(GL_LIGHT0, GL_AMBIENT, amb0);
+	// attach them to LIGHT0
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, diff0);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, spec0);
 
 	glClearColor(0.1, 0.1, 0.1, 0.0);
 	glPointSize(6.0);
@@ -198,9 +204,7 @@ void myDisplay(void) {
 	dy = -cos(phi) * cos(theta);
 	dz = sin(phi);
 	gluLookAt(ex, ey, ez, 0, 0, 0, dx, dy, dz);
-	drawCondinate();
 	for (int i = 0; i < (int) mesh.size(); i++) {
-//		glColor3f(1, 1, i * 0.03 +0.1);
 		mesh[i].drawMesh();
 	}
 	glutPostRedisplay();
@@ -244,16 +248,16 @@ void myKeyboard(unsigned char theKey, int, int) {
 			}
 	}
 	switch (theKey) {
-	case 'w':
+	case 's':
 		phi -= PI / 100;
 		break;
-	case 's':
+	case 'w':
 		phi += PI / 100;
 		break;
-	case 'a':
+	case 'd':
 		theta -= PI / 100;
 		break;
-	case 'd':
+	case 'a':
 		theta += PI / 100;
 		break;
 	case ' ':
