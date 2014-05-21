@@ -18,7 +18,6 @@
 #include <string>
 #include <vector>
 #include "Vector3.h"
-#define MESH_FILE "blablabla.obj"
 
 using namespace std;
 struct Face {

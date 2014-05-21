@@ -8,7 +8,7 @@ const int WIDTH = 600;
 using namespace std;
 
 const float PI = 3.1416;
-float distanceToOrigin = 225;
+float distanceToOrigin = 350;
 float phi, theta;
 float ex, ey, ez;
 float dx, dy, dz;
@@ -134,13 +134,13 @@ void myInit() {
 	// OpenGL init
 	// Stuff
 	glShadeModel(GL_SMOOTH);
-	glClearColor(0.3, 0.3, 0.3, 0.0);
+	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glClearDepth(1.0f);
 	glDepthFunc(GL_LEQUAL);
 	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 	glEnable(GL_LINE_SMOOTH);
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glEnable(GL_DEPTH_TEST);
 	glShadeModel(GL_SMOOTH);
@@ -150,8 +150,9 @@ void myInit() {
 	// Lighting
 	GLfloat light_ambient[] = { 0.5, 0.5, 0.5, 1.0 };
 	GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat light_position[] = { 0, 0.0, 1000.0, 1.0 };
+	GLfloat light_specular[] = { 0.5
+			, 0.5, 0.5, 1.0 };
+	GLfloat light_position[] = { -200, -200.0, -200.0, 1.0 };
 
 	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
@@ -160,14 +161,12 @@ void myInit() {
 
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
-	glShadeModel(GL_SMOOTH);
 
-	glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_COLOR_MATERIAL);
+	glShadeModel(GL_SMOOTH);
 
 	glMatrixMode( GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(90, WIDTH / HEIGHT, 0.1, 2000);
+	gluPerspective(45, WIDTH / HEIGHT, 0.1, 2000);
 	glMatrixMode( GL_MODELVIEW);
 	glLoadIdentity();
 
@@ -184,19 +183,19 @@ void myInit() {
 	//m.toString();
 }
 
-void drawCordinate(){
+void drawCordinate() {
 	glEnable(GL_COLOR_MATERIAL);
 	glBegin(GL_LINES);
 	{
-		glColor3f(1, 0 , 0);
-		glVertex3f(-100, 0, 0);
-		glVertex3f(100, 0, 0);
+		glColor3f(1, 0, 0);
+		glVertex3f(000, 0, 0);
+		glVertex3f(120, 0, 0);
 		glColor3f(0, 1, 0);
-		glVertex3f(0, 100, 0);
-		glVertex3f(0, -100, 0);
+		glVertex3f(0, 120, 0);
+		glVertex3f(0, 000, 0);
 		glColor3f(0, 0, 1);
-		glVertex3f(0, 0, -100);
-		glVertex3f(0, 0, 100);
+		glVertex3f(0, 0, 000);
+		glVertex3f(0, 0, 120);
 	}
 	glEnd();
 	glDisable(GL_COLOR_MATERIAL);
@@ -271,12 +270,12 @@ void myKeyboard(unsigned char theKey, int, int) {
 		theta += PI / 100;
 		break;
 	case 'q':
-		if (distanceToOrigin < 275)
-		distanceToOrigin += 5;
+		if (distanceToOrigin < 450)
+			distanceToOrigin += 5;
 		break;
 	case 'e':
-		if (distanceToOrigin > 110)
-		distanceToOrigin -= 5;
+		if (distanceToOrigin > 300)
+			distanceToOrigin -= 5;
 		break;
 	case ' ':
 		exit(-1); //terminate the program
