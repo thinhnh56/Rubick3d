@@ -163,7 +163,7 @@ void myInit() {
 	glShadeModel(GL_SMOOTH);
 
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_COLOR_MATERIAL);
+	//glEnable(GL_COLOR_MATERIAL);
 
 	glMatrixMode( GL_PROJECTION);
 	glLoadIdentity();
@@ -184,6 +184,24 @@ void myInit() {
 	//m.toString();
 }
 
+void drawCordinate(){
+	glEnable(GL_COLOR_MATERIAL);
+	glBegin(GL_LINES);
+	{
+		glColor3f(1, 0 , 0);
+		glVertex3f(-100, 0, 0);
+		glVertex3f(100, 0, 0);
+		glColor3f(0, 1, 0);
+		glVertex3f(0, 100, 0);
+		glVertex3f(0, -100, 0);
+		glColor3f(0, 0, 1);
+		glVertex3f(0, 0, -100);
+		glVertex3f(0, 0, 100);
+	}
+	glEnd();
+	glDisable(GL_COLOR_MATERIAL);
+}
+
 void myDisplay(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
@@ -195,6 +213,7 @@ void myDisplay(void) {
 	dy = -cos(phi) * cos(theta);
 	dz = sin(phi);
 	gluLookAt(ex, ey, ez, 0, 0, 0, dx, dy, dz);
+	drawCordinate();
 	for (int i = 0; i < (int) mesh.size(); i++) {
 		mesh[i].drawMesh();
 	}

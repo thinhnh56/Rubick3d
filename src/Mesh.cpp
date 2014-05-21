@@ -9,7 +9,7 @@
 const int addAngle = 10;
 const float PI = 3.14159265;
 const float INITLENGTH = 35.3428;
-const float RATE = 1;
+const float RATE = 1.25;
 
 void Mesh::loadMtl(const char* mtlFile) {
 	FILE* file = fopen(mtlFile, "r");
@@ -151,15 +151,15 @@ void Mesh::drawFaces() {
 	vector<float> tempFaceVertex;
 	vector<float> tempNormalVector;
 	for (int j = 0; j < (int) faces.size(); j++) {
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_COLOR_MATERIAL_FACE);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR,
+		//glEnable(GL_DEPTH_TEST);
+		//glEnable(GL_COLOR_MATERIAL_FACE);
+		glMaterialfv(GL_FRONT, GL_SPECULAR,
 				materials[faces[j].mtlIndex].Ks);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE,
+		glMaterialfv(GL_FRONT, GL_DIFFUSE,
 				materials[faces[j].mtlIndex].Kd);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT,
+		glMaterialfv(GL_FRONT, GL_AMBIENT,
 				materials[faces[j].mtlIndex].Ka);
-		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS,
+		glMaterialf(GL_FRONT, GL_SHININESS,
 				materials[faces[j].mtlIndex].Ns);
 
 //		GLfloat mat_specular[] = {0.3, 0.3, 1, 1.0};
@@ -184,22 +184,22 @@ void Mesh::drawFaces() {
 		copy(tempFaceVertex.begin(), tempFaceVertex.end(), faceVertex);
 		copy(tempNormalVector.begin(), tempNormalVector.end(), normal);
 
-		if (faces[j].mtlIndex == 0)
-			glColor3f(1, 1, 1);
-		if (faces[j].mtlIndex == 1)
-			glColor3f(1, 0, 0);
-		if (faces[j].mtlIndex == 2)
-			glColor3f(0, 1, 0);
-		if (faces[j].mtlIndex == 3)
-			glColor3f(0, 0, 1);
-		if (faces[j].mtlIndex == 4)
-			glColor3f(1, 1, 0);
-		if (faces[j].mtlIndex == 5)
-			glColor3f(0, 1, 1);
-		if (faces[j].mtlIndex == 6)
-			glColor3f(1, 0, 1);
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_COLOR_MATERIAL);
+//		if (faces[j].mtlIndex == 0)
+//			glColor3f(1, 1, 1);
+//		if (faces[j].mtlIndex == 1)
+//			glColor3f(1, 0, 0);
+//		if (faces[j].mtlIndex == 2)
+//			glColor3f(0, 1, 0);
+//		if (faces[j].mtlIndex == 3)
+//			glColor3f(0, 0, 1);
+//		if (faces[j].mtlIndex == 4)
+//			glColor3f(1, 1, 0);
+//		if (faces[j].mtlIndex == 5)
+//			glColor3f(0, 1, 1);
+//		if (faces[j].mtlIndex == 6)
+//			glColor3f(1, 0, 1);
+//		glEnable(GL_DEPTH_TEST);
+//		glEnable(GL_COLOR_MATERIAL);
 
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_NORMAL_ARRAY);
