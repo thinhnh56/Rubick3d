@@ -1,4 +1,13 @@
-#include "stdafx.h"
+#include <windows.h>
+#include <gl/gl.h>
+#include <gl/glu.h>
+#include <gl/glut.h>
+#include <iostream>
+#include <fstream>
+#include <stdio.h>
+#include <string>
+#include <vector>
+//#include "stdafx.h"
 #include "Mesh.h"
 #include "Vector3.h"
 
@@ -51,8 +60,11 @@ void makeRayPicking(int x, int y) {
 			m_end.z);
 
 }
-
-double collisionRayAndMesh(Mesh mesh) // return -1 if not, k > 0 if true with k is smallest distance from start to collisionPoints
+/*
+ * function detect if there is collision between picking ray and mesh
+ * return -1 if not, k > 0 if true with k is smallest distance from start to collisionPoints
+ */
+double collisionRayAndMesh(Mesh mesh) 
 		{
 	// mesh have center and egde length
 	Vector3 center = mesh.center;
@@ -94,6 +106,11 @@ double collisionRayAndMesh(Mesh mesh) // return -1 if not, k > 0 if true with k 
 
 }
 
+/*
+ * This function find the id of selected mesh
+ * The selested mesh is the collision mesh 
+ * and have smallest distance from start point
+ */
 int idOfSelectedMesh(vector<Mesh> mesh) {
 	double minDistToStart = 10000000.0;
 	int meshID = -1;
@@ -152,7 +169,7 @@ void myInit() {
 	GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat light_specular[] = { 0.5
 			, 0.5, 0.5, 1.0 };
-	GLfloat light_position[] = { -200, -200.0, -200.0, 1.0 };
+	GLfloat light_position[] = { 200, 200.0, 200.0, 1.0 };
 
 	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);

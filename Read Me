@@ -1,3 +1,4 @@
-Using Blender to create obj file 
-
-http://www.blender.org/
+- Click left mouse`s button to choose a box
+- press x,y,z to rotate a layer having selected box, around Ox(red), Oy(green) , Oz(blue)
+- press a,s,d,w to change camera position
+- press q,e to zoom in, zoom out. 
